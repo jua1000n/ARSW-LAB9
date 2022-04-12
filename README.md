@@ -30,6 +30,10 @@ Cuando un conjunto de usuarios consulta un enésimo número (superior a 1000000)
     `ssh scalability_lab@xxx.xxx.xxx.xxx`
 
 3. Instale node, para ello siga la sección *Installing Node.js and npm using NVM* que encontrará en este [enlace](https://linuxize.com/post/how-to-install-node-js-on-ubuntu-18.04/).
+
+![Imágen 1](images/1.jpg)
+![Imágen 1](images/2.jpg)
+
 4. Para instalar la aplicación adjunta al Laboratorio, suba la carpeta `FibonacciApp` a un repositorio al cual tenga acceso y ejecute estos comandos dentro de la VM:
 
     `git clone <your_repo>`
@@ -45,22 +49,24 @@ Cuando un conjunto de usuarios consulta un enésimo número (superior a 1000000)
 6. Antes de verificar si el endpoint funciona, en Azure vaya a la sección de *Networking* y cree una *Inbound port rule* tal como se muestra en la imágen. Para verificar que la aplicación funciona, use un browser y user el endpoint `http://xxx.xxx.xxx.xxx:3000/fibonacci/6`. La respuesta debe ser `The answer is 8`.
 
 ![](images/part1/part1-vm-3000InboudRule.png)
+![Imágen 1](images/3.jpg)
 
 7. La función que calcula en enésimo número de la secuencia de Fibonacci está muy mal construido y consume bastante CPU para obtener la respuesta. Usando la consola del Browser documente los tiempos de respuesta para dicho endpoint usando los siguintes valores:
-    * 1000000
-    * 1010000
-    * 1020000
-    * 1030000
-    * 1040000
-    * 1050000
-    * 1060000
-    * 1070000
-    * 1080000
-    * 1090000    
+    * 1000000 ![Imágen 1](images/1000000.jpg)
+    * 1010000 ![Imágen 1](images/1010000.jpg)
+    * 1020000 ![Imágen 1](images/1020000.jpg)
+    * 1030000 ![Imágen 1](images/1030000.jpg)
+    * 1040000 ![Imágen 1](images/1040000.jpg)
+    * 1050000 ![Imágen 1](images/1050000.jpg)
+    * 1060000 ![Imágen 1](images/1060000.jpg)
+    * 1070000 ![Imágen 1](images/1070000.jpg)
+    * 1080000 ![Imágen 1](images/1080000.jpg)
+    * 1090000 ![Imágen 1](images/1090000.jpg)
 
 8. Dírijase ahora a Azure y verifique el consumo de CPU para la VM. (Los resultados pueden tardar 5 minutos en aparecer).
 
 ![Imágen 2](images/part1/part1-vm-cpu.png)
+![Imágen 1](images/8.jpg)
 
 9. Ahora usaremos Postman para simular una carga concurrente a nuestro sistema. Siga estos pasos.
     * Instale newman con el comando `npm install newman -g`. Para conocer más de Newman consulte el siguiente [enlace](https://learning.getpostman.com/docs/postman/collection-runs/command-line-integration-with-newman/).
@@ -72,30 +78,86 @@ Cuando un conjunto de usuarios consulta un enésimo número (superior a 1000000)
     newman run ARSW_LOAD-BALANCING_AZURE.postman_collection.json -e [ARSW_LOAD-BALANCING_AZURE].postman_environment.json -n 10 &
     newman run ARSW_LOAD-BALANCING_AZURE.postman_collection.json -e [ARSW_LOAD-BALANCING_AZURE].postman_environment.json -n 10
     ```
+    
+    ![Imágen 1](images/9.1.jpg)
+    ![Imágen 1](images/9.2.jpg)
+    
+    Se realizaron las indicaciones anteriormente dadas y con estas no se logro realizar la prueba, consideramos que para que se ejecitara de forma correcta las pruebas se debian realizar estos cambios. 
+     ![Imágen 1](images/9.3.jpg)
+    ![Imágen 1](images/9.4.jpg)
 
 10. La cantidad de CPU consumida es bastante grande y un conjunto considerable de peticiones concurrentes pueden hacer fallar nuestro servicio. Para solucionarlo usaremos una estrategia de Escalamiento Vertical. En Azure diríjase a la sección *size* y a continuación seleccione el tamaño `B2ms`.
 
 ![Imágen 3](images/part1/part1-vm-resize.png)
+![Imágen 1](images/10.jpg)
 
 11. Una vez el cambio se vea reflejado, repita el paso 7, 8 y 9.
+### Paso 7
+   * 1000000 ![Imágen 1](images/1000000.2.jpg)
+    * 1010000 ![Imágen 1](images/1010000.2.jpg)
+    * 1020000 ![Imágen 1](images/1020000.2.jpg)
+    * 1030000 ![Imágen 1](images/1030000.2.jpg)
+    * 1040000 ![Imágen 1](images/1040000.2.jpg)
+    * 1050000 ![Imágen 1](images/1050000.2.jpg)
+    * 1060000 ![Imágen 1](images/1060000.2.jpg)
+    * 1070000 ![Imágen 1](images/1070000.2.jpg)
+    * 1080000 ![Imágen 1](images/1080000.2.jpg)
+    * 1090000 ![Imágen 1](images/1090000.2.jpg)
+    
+### Paso 8
+![Imágen 1](images/8.2.jpg)
+
+### Paso 9
+![Imágen 1](images/9.5.jpg)
+
 12. Evalue el escenario de calidad asociado al requerimiento no funcional de escalabilidad y concluya si usando este modelo de escalabilidad logramos cumplirlo.
-13. Vuelva a dejar la VM en el tamaño inicial para evitar cobros adicionales.
+Teniendo en cuenta las capturas anterirores, se puede llegar a ver que los tiempos se redujeron, demostrando que el cambio funcionó, pero apesar de que fue mas rapido seguian surgiendo errores al momento de ralizar las pruebas concurrentes.
+
+14. Vuelva a dejar la VM en el tamaño inicial para evitar cobros adicionales.
 
 **Preguntas**
 
-1. ¿Cuántos y cuáles recursos crea Azure junto con la VM?
-2. ¿Brevemente describa para qué sirve cada recurso?
-3. ¿Al cerrar la conexión ssh con la VM, por qué se cae la aplicación que ejecutamos con el comando `npm FibonacciApp.js`? ¿Por qué debemos crear un *Inbound port rule* antes de acceder al servicio?
-4. Adjunte tabla de tiempos e interprete por qué la función tarda tando tiempo.
-5. Adjunte imágen del consumo de CPU de la VM e interprete por qué la función consume esa cantidad de CPU.
-6. Adjunte la imagen del resumen de la ejecución de Postman. Interprete:
+1. ¿Cuántos y cuáles recursos crea Azure junto con la VM? 
+   - IP
+   - Security group
+ 
+3. ¿Brevemente describa para qué sirve cada recurso?
+   - IP: es la direccion que identifica de que forma podemos hacer conexion con la maquina virtual, ademas de que este es el que hace que los dispositivos puedan tener conexion a internet.
+   - Security group: Sirve para filtrar el tráfico de red hacia y desde los recursos de Azure de una red virtual de Azure. Un grupo de seguridad de red contiene reglas de seguridad que permiten o deniegan el tráfico de red entrante o el tráfico de red saliente de varios tipos de recursos de Azure. Para cada regla, puede especificar un origen y destino, un puerto y un protocolo.
+   
+5. ¿Al cerrar la conexión ssh con la VM, por qué se cae la aplicación que ejecutamos con el comando `npm FibonacciApp.js`? ¿Por qué debemos crear un *Inbound port rule* antes de acceder al servicio?
+
+Al momneto de cerrar la conexión se cae la aplicacion debido a que esta se queda ejecutando en ese comando, no se queda en segundo plano, y en el momento que se cierra la conexion cancela ese comando que se estaba ejecutando. Se debe crear una Inbound port rule ya que este solo cuenta con dos puertos expuestos, los cuales son el 22 y el 80, en este caso el servicio esta publicado en el 3000, esto se hace por temas de seguridad, por tanto se debe abrir el puerto para poder consumir el servicio que se quiera exponer por ese puerto.
+
+7. Adjunte tabla de tiempos e interprete por qué la función tarda tando tiempo.
+
+![P 4](images/p4.jpg)
+
+9. Adjunte imágen del consumo de CPU de la VM e interprete por qué la función consume esa cantidad de CPU.
+
+![P 4](images/8.jpg)
+![P 4](images/8.2.jpg)
+
+Se debe tener en cuenta que la primera vez que se realizaron la VM al tener recurso muy limitados se lograba ver en mayor cantidad el tema de el consumo de los recursos, en el momento que se le apliaron los recursos a la maquina se puede apreciar que estos consumos de antes ya no se logran ver igual, suponemos que consume por que este proceso se ejecuta de forma concurrente.
+
+11. Adjunte la imagen del resumen de la ejecución de Postman. Interprete:
     * Tiempos de ejecución de cada petición.
+    ![P 4](images/p6.jpg)
+    Como se puede ver en la tabla en ambos casos la primera vez se obtuvo un tiempo mayor debido a que en esta las dos peticiones salieron de forma correcta, pero el problema surgia apartir de estas, debido a que cada iteracion hace como dos peticiones concurrentes, pero solo una de estas salia de forma correcta por tanto el tiempo es menor, estas peticiones se cancelaban ya que el servidor cierra la conexion.
     * Si hubo fallos documentelos y explique.
-7. ¿Cuál es la diferencia entre los tamaños `B2ms` y `B1ls` (no solo busque especificaciones de infraestructura)?
-8. ¿Aumentar el tamaño de la VM es una buena solución en este escenario?, ¿Qué pasa con la FibonacciApp cuando cambiamos el tamaño de la VM?
-9. ¿Qué pasa con la infraestructura cuando cambia el tamaño de la VM? ¿Qué efectos negativos implica?
-10. ¿Hubo mejora en el consumo de CPU o en los tiempos de respuesta? Si/No ¿Por qué?
-11. Aumente la cantidad de ejecuciones paralelas del comando de postman a `4`. ¿El comportamiento del sistema es porcentualmente mejor?
+    En la peticiones surgian errores, nos aparecia el error  ** read ECONNRESET **, que indica que se cerro la conexion TCP y que no se cumple la solicitud al servidor
+ 
+
+12. ¿Cuál es la diferencia entre los tamaños `B2ms` y `B1ls` (no solo busque especificaciones de infraestructura)?
+La principal diferencia es que el B1|s son muy bajas sus caracteristicas, este cuenta con 1 vCPU, 0.5 de RAM y el B2ms cuenta con 2vCPU, 8 de RAM, se puede ver que tiene el doble o mas en las caracteristicas, generando que se note una mejora de rendimiento al momento de realizar las mismas pruebas.
+
+14. ¿Aumentar el tamaño de la VM es una buena solución en este escenario?, ¿Qué pasa con la FibonacciApp cuando cambiamos el tamaño de la VM?
+
+Si puede llegar a ser buena opcion pero talvez si se pudiera buscar una que fuera intermedio entre estas dos seria mejor ya que en la B2ms no se esta aprovechando al maximo los recursos que tiene esta. Cuando se realiza el cambio se puede notar una mejora de 2 o mas segundos.
+
+16. ¿Qué pasa con la infraestructura cuando cambia el tamaño de la VM? ¿Qué efectos negativos implica? Implica que esta es mas cara, por tanto se debe tener en cuenta que entre mas rendimiento implica mas dinero.
+17. ¿Hubo mejora en el consumo de CPU o en los tiempos de respuesta? Si/No ¿Por qué? Si, debido a que este cuenta con una mejor acaracteristica de CPU por tanto no tiene esforcarce tanto, antes llegaba cerca del 40%, con el nuevo tamaño no llego ni al 1%.
+18. Aumente la cantidad de ejecuciones paralelas del comando de postman a `4`. ¿El comportamiento del sistema es porcentualmente mejor?
 
 ### Parte 2 - Escalabilidad horizontal
 
