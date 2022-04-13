@@ -84,6 +84,8 @@ Cuando un conjunto de usuarios consulta un enésimo número (superior a 1000000)
     
     ![Imágen 1](images/9.1.jpg)
     ![Imágen 1](images/9.2.jpg)
+
+
     
 
 
