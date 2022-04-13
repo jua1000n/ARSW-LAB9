@@ -1,4 +1,7 @@
 ### Escuela Colombiana de Ingeniería
+### Integrantes
+ - Camilo Andres Pichimata
+ - Juan Sebastian Cadavid
 ### Arquitecturas de Software - ARSW
 
 ## Escalamiento en Azure con Maquinas Virtuales, Sacale Sets y Service Plans
@@ -82,9 +85,7 @@ Cuando un conjunto de usuarios consulta un enésimo número (superior a 1000000)
     ![Imágen 1](images/9.1.jpg)
     ![Imágen 1](images/9.2.jpg)
     
-    Se realizaron las indicaciones anteriormente dadas y con estas no se logro realizar la prueba, consideramos que para que se ejecitara de forma correcta las pruebas se debian realizar estos cambios. 
-     ![Imágen 1](images/9.3.jpg)
-    ![Imágen 1](images/9.4.jpg)
+
 
 10. La cantidad de CPU consumida es bastante grande y un conjunto considerable de peticiones concurrentes pueden hacer fallar nuestro servicio. Para solucionarlo usaremos una estrategia de Escalamiento Vertical. En Azure diríjase a la sección *size* y a continuación seleccione el tamaño `B2ms`.
 
@@ -142,7 +143,9 @@ Se debe tener en cuenta que la primera vez que se realizaron la VM al tener recu
 
 11. Adjunte la imagen del resumen de la ejecución de Postman. Interprete:
     * Tiempos de ejecución de cada petición.
+    
     ![P 4](images/p6.jpg)
+    
     Como se puede ver en la tabla en ambos casos la primera vez se obtuvo un tiempo mayor debido a que en esta las dos peticiones salieron de forma correcta, pero el problema surgia apartir de estas, debido a que cada iteracion hace como dos peticiones concurrentes, pero solo una de estas salia de forma correcta por tanto el tiempo es menor, estas peticiones se cancelaban ya que el servidor cierra la conexion.
     * Si hubo fallos documentelos y explique.
     En la peticiones surgian errores, nos aparecia el error  ** read ECONNRESET **, que indica que se cerro la conexion TCP y que no se cumple la solicitud al servidor
@@ -232,10 +235,21 @@ http://52.155.223.248/
 http://52.155.223.248/fibonacci/1
 ```
 
+![](images/p2.1.jpg)
+![](images/p2.1.1.jpg)
+
 2. Realice las pruebas de carga con `newman` que se realizaron en la parte 1 y haga un informe comparativo donde contraste: tiempos de respuesta, cantidad de peticiones respondidas con éxito, costos de las 2 infraestrucruras, es decir, la que desarrollamos con balanceo de carga horizontal y la que se hizo con una maquina virtual escalada.
+![](images/p2.3.1.jpg)
+![](images/9.5.jpg)
 
-3. Agregue una 4 maquina virtual y realice las pruebas de newman, pero esta vez no lance 2 peticiones en paralelo, sino que incrementelo a 4. Haga un informe donde presente el comportamiento de la CPU de las 4 VM y explique porque la tasa de éxito de las peticiones aumento con este estilo de escalabilidad.
+4. Agregue una 4 maquina virtual y realice las pruebas de newman, pero esta vez no lance 2 peticiones en paralelo, sino que incrementelo a 4. Haga un informe donde presente el comportamiento de la CPU de las 4 VM y explique porque la tasa de éxito de las peticiones aumento con este estilo de escalabilidad.
 
+Se intento hacer la prubea con las 4 maquinas pero este no sirve, debido a que no es capaz de reconocer las 4 mquinas, talvez se deba a la zona de disponibilidad, debido a que azure dispone de 3 y estas ya se encuentran en uso por tanto puede que exista algun tipo de problema
+![](images/p2.3.4.jpg)
+![](images/p2.3.3.jpg)
+
+En este caso como no se logro hacer lo hicimos con tres
+![](images/p2.3.2.jpg)
 ```
 newman run ARSW_LOAD-BALANCING_AZURE.postman_collection.json -e [ARSW_LOAD-BALANCING_AZURE].postman_environment.json -n 10 &
 newman run ARSW_LOAD-BALANCING_AZURE.postman_collection.json -e [ARSW_LOAD-BALANCING_AZURE].postman_environment.json -n 10 &
@@ -246,14 +260,33 @@ newman run ARSW_LOAD-BALANCING_AZURE.postman_collection.json -e [ARSW_LOAD-BALAN
 **Preguntas**
 
 * ¿Cuáles son los tipos de balanceadores de carga en Azure y en qué se diferencian?, ¿Qué es SKU, qué tipos hay y en qué se diferencian?, ¿Por qué el balanceador de carga necesita una IP pública?
+    - Load Balancer Standard: Este es capas de equilibrar el trafico de la capa de red ayudando en un alto rendimiento y generando una latencia baja.
+    - Load Balancer Basic: Al ser basico este se usa solo para que ayude a balanciar las cargas, pero no lo hace de forma inteligente portanto provoca baja disponibilidad.
+    - SKU: Stock keeping unit, son diferentes niveles que ofrecen precios predecibles y varias opciones para alinearse con la capacidad y los patrones de uso de su registro de Docker privado en Azure. Se pueden encontrar tres basic, estandar, premium, La elección de un nivel de servicio superior aporta mayor rendimiento y escalabilidad. Con varios niveles de servicio, puede empezar a trabajar con el nivel Básico y, después, cambiar a Estándar y a Premium a medida que aumente su uso del registro.
+    - Poe que el balanceador necesita una ip publica, esto surge debido a que este recibe peticiones, por tanto este debe estar expuesto a recibir cualquier tipo de peticion, en este caso lo hace por medio de esta ip
 * ¿Cuál es el propósito del *Backend Pool*?
+  * Es un componente crítico del equilibrador de carga. El grupo de back-end define el grupo de recursos que servirán al tráfico para una regla de equilibrio de carga determinada.‎
 * ¿Cuál es el propósito del *Health Probe*?
+  * se configura un sondeo de mantenimiento que el equilibrador de carga puede usar para determinar si la instancia está en buen estado. Si la instancia falla su sondeo de estado suficientes veces, dejará de recibir tráfico hasta que comience a pasar los sondeos de estado nuevamente‎.
 * ¿Cuál es el propósito de la *Load Balancing Rule*? ¿Qué tipos de sesión persistente existen, por qué esto es importante y cómo puede afectar la escalabilidad del sistema?.
+  * Este se usa para poder gestionar el control de trafico que llega al grupo de backend, este se puede utilizar para la alta disponiblidad, etc.
+  * Existen 2 tipos de sesiones persistentes
+    * IP del cliente: Especifica que la misma instancia de back-end controlará las solicitudes sucesivas de la misma dirección IP de cliente.
+    * IP y protocolo del cliente: Especifica que la misma instancia de back-end controlará las solicitudes sucesivas de la combinación de la misma dirección IP y el mismo protocolo de cliente.
 * ¿Qué es una *Virtual Network*? ¿Qué es una *Subnet*? ¿Para qué sirven los *address space* y *address range*?
+  * Virtual Network: Es el bloque de creación fundamental de una red privada en Azure. VNet permite muchos tipos de recursos de Azure, como Azure Virtual Machines (máquinas virtuales), para comunicarse de forma segura entre usuarios, con Internet y con las redes locales
+  * Subnet: Es un rango de direcciones lógicas. Cuando una red se vuelve muy grande, conviene dividirla en subredes
+  * address space: Define un intervalo de direcciones discretas, cada una de las cuales puede corresponder a un host de red, un dispositivo periférico, un sector de disco, una celda de memoria u otra entidad lógica o física
+  * address range: Determina el numero de direcciones que se pueden establecer dentro de una address space.
 * ¿Qué son las *Availability Zone* y por qué seleccionamos 3 diferentes zonas?. ¿Qué significa que una IP sea *zone-redundant*?
+  * Availability Zone: son varias ubicaciones aisladas dentro de cada región
+  * IP zone-redundant: Son zonas separadas de forma fisica y logica, permitiendo mejorar la conexion disminuyendo los fallos de disponibilidad
 * ¿Cuál es el propósito del *Network Security Group*?
+  * Network Security Group: una línea de defensa en la seguridad de nuestros recursos en Azure. Se considera un firewall de capa 4 porque puede filtrar por direcciones IP origen y destino, por puertos origen y destino y por protocolo (TCP/UDP), pero no por contenido.
 * Informe de newman 1 (Punto 2)
+Pues como se puede ver hay una gran diferencia principalmente en el tema de errores, al ser distribuido las cargas esto provoca que se ejecute de mejor forma haciendo que no surgan errores, en este cao no se puede establecer en velocidad cual es mejor por el tema de errores.
 * Presente el Diagrama de Despliegue de la solución.
+  ![](images/diagram.png)
 
 
 
